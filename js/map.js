@@ -1,12 +1,8 @@
 'use strict';
 
-// удаляем класс для активации карты
-
-var map = document.querySelector('.map');
-map.classList.remove('map--faded');
-
 // Находим элемент, в который будем вставлять фрагмент
 
+var map = document.querySelector('.map');
 var pinBlock = map.querySelector('.map__pins');
 
 // Находим шаблон для пина
@@ -230,9 +226,6 @@ var createCard = function (advert) {
   pinBlock.appendChild(cardFragment);
 };
 
-// Вывели объявление в браузер
-
-createCard(advertShow);
 
 // Копируем шаблон и заполняем данными блок пина
 
@@ -245,6 +238,8 @@ var renderPin = function (advert) {
   pinElement.style = 'left: ' + pinX + 'px; top: ' + pinY + 'px;';
   pinElement.querySelector('img').src = advert.author.avatar;
   pinElement.querySelector('img').alt = advert.offer.title;
+
+  pinElement.addEventListener('click', onPinClick);
 
   return pinElement;
 };
@@ -260,7 +255,46 @@ var createPin = function (advert) {
   pinBlock.appendChild(pinFragment);
 };
 
-// Вывели пин в браузер
 
-createPin(advertShow);
+// Активация страницы //
 
+var form = document.querySelector('.ad-form');
+var formFieldset = form.querySelectorAll('fieldset');
+var inputAddress = form.querySelector('input[name="address"]');
+var mapPinMain = map.querySelector('.map__pin--main');
+
+
+var MAP_PIN_BUTTON_SIZE = 65;
+var MAP_PIN_MAIN_WIDTH = 65;
+var MAP_PIN_MAIN_HEIGHT = 87;
+
+
+var mapPinButtonCoordinate = Math.floor((parseInt(mapPinMain.style.left, 10) + MAP_PIN_BUTTON_SIZE / 2)) + ' , '
++ Math.floor((parseInt(mapPinMain.style.top, 10) + MAP_PIN_BUTTON_SIZE / 2));
+inputAddress.value = mapPinButtonCoordinate;
+
+var mapPinMainCoordinate = Math.floor((parseInt(mapPinMain.style.left, 10) + MAP_PIN_MAIN_WIDTH / 2)) + ' , '
++ Math.floor((parseInt(mapPinMain.style.top, 10) + MAP_PIN_MAIN_HEIGHT));
+
+
+var activePage = function () {
+  map.classList.remove('map--faded');
+  form.classList.remove('ad-form--disabled');
+
+  for (var i = 0; i < formFieldset.length; i++) {
+    formFieldset[i].removeAttribute('disabled');
+  }
+
+  inputAddress.value = mapPinMainCoordinate;
+  createPin(advertShow);
+};
+
+var onMapPinMainMouseup = function () {
+  activePage();
+};
+mapPinMain.addEventListener('mouseup', onMapPinMainMouseup);
+
+
+var onPinClick = function () {
+  createCard(advertShow);
+};
