@@ -16,8 +16,8 @@ var MAP_PIN_BUTTON_SIZE = 65;
 var MAP_PIN_MAIN_WIDTH = 65;
 var MAP_PIN_MAIN_HEIGHT = 87;
 
-// var ESC_KEYCODE = 27;
-// var ENTER_KEYCODE = 13;
+var ESC_KEYCODE = 27;
+var ENTER_KEYCODE = 13;
 
 // массивы данных
 
@@ -65,16 +65,14 @@ var PHOTOS_OFFER = [
 var map = document.querySelector('.map');
 var pinBlock = map.querySelector('.map__pins');
 
-// Находим шаблон для пина
-
-var pinTemplate = document.querySelector('template');
-var mapPin = pinTemplate.content.querySelector('.map__pin');
-
-
-// Находим шаблон для объявления
+// Находим шаблоны для объявления
 
 var cardTemplate = document.querySelector('template');
+var mapPin = cardTemplate.content.querySelector('.map__pin');
 var mapCard = cardTemplate.content.querySelector('.map__card');
+
+var filtersBlock = map.querySelector('.map__filters-container');
+
 
 // Поиск случайного числа(number) в диапазоне
 
@@ -143,7 +141,7 @@ var getAdvert = function () {
   }
   return adverts;
 };
-var cardsMassive = getAdvert();
+var cards = getAdvert();
 
 // Функция создания features
 
@@ -159,6 +157,7 @@ var createFeaturesElement = function (array) {
 };
 
 // Копируем шаблон и заполняем данными блок объявления
+
 var cardElement = mapCard.cloneNode(true);
 
 var renderCard = function (advert) {
@@ -233,14 +232,26 @@ advert.offer.rooms + ' ' + ' ' + cardRooms + ' ' + 'для' + ' ' + advert.offer
   photoList.appendChild(fragment);
 
   cardElement.querySelector('.popup__avatar').src = advert.author.avatar;
-
   cardElement.classList.remove('hidden');
+
   var cardClose = cardElement.querySelector('.popup__close');
 
-  var onCloseCard = function () {
+  var closeCard = function () {
     cardElement.classList.add('hidden');
   };
-  cardClose.addEventListener('click', onCloseCard);
+
+  var onButtonCloseClick = function () {
+    closeCard();
+  };
+
+  var onButtonCloseTab = function (evt) {
+    if (evt.keyCode === ESC_KEYCODE) {
+      closeCard();
+    }
+  };
+
+  cardClose.addEventListener('click', onButtonCloseClick);
+  cardClose.addEventListener('keydown', onButtonCloseTab);
 
   return cardElement;
 };
@@ -258,23 +269,26 @@ var renderPin = function (advert, i) {
   pinElement.style = 'left: ' + pinX + 'px; top: ' + pinY + 'px;';
   pinElement.querySelector('img').src = advert.author.avatar;
   pinElement.querySelector('img').alt = advert.offer.title;
-
   pinElement.setAttribute('data-index', i);
-  pinElement.setAttribute('tabindex', 0);
-
 
   var openPin = function (evt) {
-
-    if (evt.target.tagName !== 'IMG') {
-      return;
-    }
     var target = evt.target.closest('button');
-    var index = target.getAttribute('data-index');
-    var newRenderCard = renderCard(cardsMassive[index]);
-    pinBlock.appendChild(newRenderCard);
+    var index = target.dataset.index;
+    renderCard(cards[index]);
   };
 
-  pinElement.addEventListener('click', openPin);
+  var onPinOpenClick = function (evt) {
+    openPin(evt);
+  };
+
+  var onPinOpenTab = function (evt) {
+    if (evt.keyCode === ENTER_KEYCODE) {
+      openPin(evt);
+    }
+  };
+
+  pinElement.addEventListener('click', onPinOpenClick);
+  pinElement.addEventListener('keydown', onPinOpenTab);
 
   return pinElement;
 };
@@ -282,10 +296,10 @@ var renderPin = function (advert, i) {
 
 // Отрисовали блок пина
 
-var createPin = function () {
+var createPins = function () {
   var pinFragment = document.createDocumentFragment();
-  for (var i = 0; i < cardsMassive.length; i++) {
-    pinFragment.appendChild(renderPin(cardsMassive[i], i));
+  for (var i = 0; i < cards.length; i++) {
+    pinFragment.appendChild(renderPin(cards[i], i));
   }
   pinBlock.appendChild(pinFragment);
 };
@@ -307,7 +321,7 @@ var mapPinMainCoordinate = Math.floor((parseInt(mapPinMain.style.left, 10) + MAP
 + Math.floor((parseInt(mapPinMain.style.top, 10) + MAP_PIN_MAIN_HEIGHT));
 
 
-var activePage = function () {
+var activatePage = function () {
   map.classList.remove('map--faded');
   form.classList.remove('ad-form--disabled');
 
@@ -317,11 +331,22 @@ var activePage = function () {
   }
 
   inputAddress.value = mapPinMainCoordinate;
-  createPin(cardsMassive);
+  createPins(cards);
+
+  map.insertBefore(renderCard(cards[0]), filtersBlock);
+  cardElement.classList.add('hidden');
 };
 
 var onMapPinMainMouseup = function () {
-  activePage();
+  activatePage();
 };
+
+var onMapPinMainTab = function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    activatePage();
+  }
+};
+
 mapPinMain.addEventListener('mouseup', onMapPinMainMouseup);
+mapPinMain.addEventListener('keydown', onMapPinMainTab);
 
