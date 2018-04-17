@@ -21,18 +21,7 @@ var ENTER_KEYCODE = 13;
 
 // массивы данных
 
-var AVATARS_PHOTO = [
-  'img/avatars/user01.png',
-  'img/avatars/user02.png',
-  'img/avatars/user03.png',
-  'img/avatars/user04.png',
-  'img/avatars/user05.png',
-  'img/avatars/user06.png',
-  'img/avatars/user07.png',
-  'img/avatars/user08.png'
-];
-
-var OFFER_TITLE = [
+var OFFER_TITLES = [
   'Большая уютная квартира',
   'Маленькая неуютная квартира',
   'Огромный прекрасный дворец',
@@ -42,7 +31,8 @@ var OFFER_TITLE = [
   'Уютное бунгало далеко от моря',
   'Неуютное бунгало по колено в воде'
 ];
-var TYPE_OFFER = ['palace', 'flat', 'house', 'bungalo'];
+
+var TYPES_OFFER = ['palace', 'flat', 'house', 'bungalo'];
 var CHECKIN_OFFER = ['12:00', '13:00', '14:00'];
 var CHECKOUT_OFFER = ['12:00', '13:00', '14:00'];
 var FEATURES_OFFER = [
@@ -68,7 +58,6 @@ var pinBlock = map.querySelector('.map__pins');
 // Находим шаблоны для объявления
 
 var cardTemplate = document.querySelector('template');
-var mapPin = cardTemplate.content.querySelector('.map__pin');
 var mapCard = cardTemplate.content.querySelector('.map__card');
 
 var filtersBlock = map.querySelector('.map__filters-container');
@@ -112,19 +101,19 @@ var getRandomArray = function () {
 // Создание основного массива с объектами
 
 var getAdvert = function () {
-  var xСoordinate = getRandomNumber(X_COORDINATE_MIN, X_COORDINATE_MAX);
-  var yСoordinate = getRandomNumber(Y_COORDINATE_MIN, Y_COORDINATE_MAX);
   var adverts = [];
   for (var i = 0; i < QUANTITY_ADVERT; i++) {
+    var xСoordinate = getRandomNumber(X_COORDINATE_MIN, X_COORDINATE_MAX);
+    var yСoordinate = getRandomNumber(Y_COORDINATE_MIN, Y_COORDINATE_MAX);
     adverts[i] = {
       author: {
-        avatar: AVATARS_PHOTO[i]
+        avatar: 'img/avatars/user' + '0' + (i + 1) + '.png'
       },
       offer: {
-        title: OFFER_TITLE[getRandomValue(OFFER_TITLE)],
+        title: OFFER_TITLES[getRandomValue(OFFER_TITLES)],
         address: xСoordinate + ',' + yСoordinate,
         price: getRandomNumber(MIN_PRICE, MAX_PRICE),
-        type: TYPE_OFFER[getRandomValue(TYPE_OFFER)],
+        type: TYPES_OFFER[getRandomValue(TYPES_OFFER)],
         rooms: getRandomNumber(1, ROOMS_QUANTITY),
         guests: getRandomNumber(1, GUESTS_QUANTITY),
         checkin: CHECKIN_OFFER[getRandomValue(CHECKIN_OFFER)],
@@ -134,13 +123,14 @@ var getAdvert = function () {
         photos: getRandomSort(PHOTOS_OFFER)
       },
       location: {
-        x: getRandomNumber(X_COORDINATE_MIN, X_COORDINATE_MAX) - DIFF_PIN_X,
-        y: getRandomNumber(Y_COORDINATE_MIN, Y_COORDINATE_MAX) - DIFF_PIN_Y
+        x: xСoordinate - DIFF_PIN_X,
+        y: yСoordinate - DIFF_PIN_Y
       }
     };
   }
   return adverts;
 };
+
 var cards = getAdvert();
 
 // Функция создания features
@@ -162,6 +152,8 @@ var cardElement = mapCard.cloneNode(true);
 
 var renderCard = function (advert) {
   cardElement.querySelector('.popup__title').textContent = advert.offer.title;
+
+
   cardElement.querySelector('.popup__text--address').textContent = advert.offer.address;
   cardElement.querySelector('.popup__text--price').textContent = advert.offer.price + '₽/ночь';
 
@@ -216,20 +208,21 @@ advert.offer.rooms + ' ' + ' ' + cardRooms + ' ' + 'для' + ' ' + advert.offer
   cardElement.querySelector('.popup__features').appendChild(createFeaturesElement(advert.offer.features));
   cardElement.querySelector('.popup__description').textContent = advert.offer.description;
 
+  cardElement.querySelector('.popup__photos').innerHTML = '';
   var photoList = cardElement.querySelector('.popup__photos');
-  var photoItem = photoList.querySelector('.popup__photo');
-  var fragment = document.createDocumentFragment();
-  for (var i = 0; i < advert.offer.photos.length; i++) {
-    var photoElement = photoItem.cloneNode(true);
-    photoElement.src = advert.offer.photos[i];
-    fragment.appendChild(photoElement);
-  }
-  while (photoList.querySelector('.popup__photo')) {
-    photoItem = photoList.querySelector('.popup__photo');
-    photoList.removeChild(photoItem);
-  }
-
-  photoList.appendChild(fragment);
+  var createPhotos = function () {
+    for (var j = 0; j < advert.offer.photos.length; j++) {
+      var photoElement = document.createElement('img');
+      photoElement.classList.add('.popup__photo');
+      photoElement.width = '45';
+      photoElement.height = '40';
+      photoElement.alt = 'Фотография жилья';
+      photoElement.src = advert.offer.photos[j];
+      photoList.appendChild(photoElement);
+    }
+    return photoElement;
+  };
+  photoList = createPhotos();
 
   cardElement.querySelector('.popup__avatar').src = advert.author.avatar;
   cardElement.classList.remove('hidden');
@@ -240,18 +233,15 @@ advert.offer.rooms + ' ' + ' ' + cardRooms + ' ' + 'для' + ' ' + advert.offer
     cardElement.classList.add('hidden');
   };
 
-  var onButtonCloseClick = function () {
-    closeCard();
-  };
-
-  var onButtonCloseTab = function (evt) {
+  cardClose.addEventListener('click', closeCard);
+  cardClose.addEventListener('keydown', function (evt) {
+    if (evt.keyCode === ENTER_KEYCODE) {
+      closeCard();
+    }
     if (evt.keyCode === ESC_KEYCODE) {
       closeCard();
     }
-  };
-
-  cardClose.addEventListener('click', onButtonCloseClick);
-  cardClose.addEventListener('keydown', onButtonCloseTab);
+  });
 
   return cardElement;
 };
@@ -260,6 +250,7 @@ advert.offer.rooms + ' ' + ' ' + cardRooms + ' ' + 'для' + ' ' + advert.offer
 // Копируем шаблон и заполняем данными блок пина
 
 var renderPin = function (advert, i) {
+  var mapPin = cardTemplate.content.querySelector('.map__pin');
 
   var pinElement = mapPin.cloneNode(true); // Копируем шаблон
 
@@ -271,24 +262,21 @@ var renderPin = function (advert, i) {
   pinElement.querySelector('img').alt = advert.offer.title;
   pinElement.setAttribute('data-index', i);
 
-  var openPin = function (evt) {
-    var target = evt.target.closest('button');
-    var index = target.dataset.index;
-    renderCard(cards[index]);
-  };
-
-  var onPinOpenClick = function (evt) {
-    openPin(evt);
-  };
-
-  var onPinOpenTab = function (evt) {
-    if (evt.keyCode === ENTER_KEYCODE) {
-      openPin(evt);
+  var openCard = function (evt) {
+    var target = evt.target;
+    if (target.tagName !== 'IMG') {
+      return;
     }
+    map.insertBefore(renderCard(cards[i]), filtersBlock);
   };
 
-  pinElement.addEventListener('click', onPinOpenClick);
-  pinElement.addEventListener('keydown', onPinOpenTab);
+
+  pinElement.addEventListener('click', openCard);
+  pinElement.addEventListener('keydown', function (evt) {
+    if (evt.keyCode === ENTER_KEYCODE) {
+      openCard();
+    }
+  });
 
   return pinElement;
 };
@@ -313,15 +301,25 @@ var inputAddress = form.querySelector('input[name="address"]');
 var mapPinMain = map.querySelector('.map__pin--main');
 
 
-var mapPinButtonCoordinate = Math.floor((parseInt(mapPinMain.style.left, 10) + MAP_PIN_BUTTON_SIZE / 2)) + ' , '
+var getMainButtonCoordinate = function () {
+  var mapPinButtonCoordinate = Math.floor((parseInt(mapPinMain.style.left, 10) + MAP_PIN_BUTTON_SIZE / 2)) + ' , '
 + Math.floor((parseInt(mapPinMain.style.top, 10) + MAP_PIN_BUTTON_SIZE / 2));
-inputAddress.value = mapPinButtonCoordinate;
 
-var mapPinMainCoordinate = Math.floor((parseInt(mapPinMain.style.left, 10) + MAP_PIN_MAIN_WIDTH / 2)) + ' , '
+  inputAddress.value = mapPinButtonCoordinate;
+
+  return mapPinButtonCoordinate;
+};
+
+getMainButtonCoordinate();
+
+var getPinMainCoordinate = function () {
+  var mapPinMainCoordinate = Math.floor((parseInt(mapPinMain.style.left, 10) + MAP_PIN_MAIN_WIDTH / 2)) + ' , '
 + Math.floor((parseInt(mapPinMain.style.top, 10) + MAP_PIN_MAIN_HEIGHT));
-
+  return mapPinMainCoordinate;
+};
 
 var activatePage = function () {
+
   map.classList.remove('map--faded');
   form.classList.remove('ad-form--disabled');
 
@@ -330,23 +328,16 @@ var activatePage = function () {
     formFieldset[i].removeAttribute('disabled');
   }
 
-  inputAddress.value = mapPinMainCoordinate;
+  inputAddress.value = getPinMainCoordinate();
   createPins(cards);
 
-  map.insertBefore(renderCard(cards[0]), filtersBlock);
-  cardElement.classList.add('hidden');
 };
 
-var onMapPinMainMouseup = function () {
-  activatePage();
-};
 
-var onMapPinMainTab = function (evt) {
+mapPinMain.addEventListener('mouseup', activatePage);
+mapPinMain.addEventListener('keydown', function (evt) {
   if (evt.keyCode === ENTER_KEYCODE) {
     activatePage();
   }
-};
-
-mapPinMain.addEventListener('mouseup', onMapPinMainMouseup);
-mapPinMain.addEventListener('keydown', onMapPinMainTab);
+});
 
