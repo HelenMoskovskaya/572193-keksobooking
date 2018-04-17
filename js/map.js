@@ -265,7 +265,9 @@ var renderPin = function (advert, i) {
   var openCard = function (evt) {
     var target = evt.target;
     var buttonClick = target.closest('button');
-    if (!buttonClick) return;
+    if (!buttonClick) {
+      return;
+    }
     map.insertBefore(renderCard(cards[i]), filtersBlock);
   };
 
@@ -275,9 +277,11 @@ var renderPin = function (advert, i) {
     if (evt.keyCode === ENTER_KEYCODE) {
       var target = evt.target;
       var buttonClick = target.closest('button');
-      if (!buttonClick) return;
+      if (!buttonClick) {
+        return;
+      }
       map.insertBefore(renderCard(cards[i]), filtersBlock);
-    };
+    }
   });
 
   return pinElement;
