@@ -264,9 +264,8 @@ var renderPin = function (advert, i) {
 
   var openCard = function (evt) {
     var target = evt.target;
-    if (target.tagName !== 'IMG') {
-      return;
-    }
+    var buttonClick = target.closest('button');
+    if (!buttonClick) return;
     map.insertBefore(renderCard(cards[i]), filtersBlock);
   };
 
@@ -274,8 +273,11 @@ var renderPin = function (advert, i) {
   pinElement.addEventListener('click', openCard);
   pinElement.addEventListener('keydown', function (evt) {
     if (evt.keyCode === ENTER_KEYCODE) {
-      openCard();
-    }
+      var target = evt.target;
+      var buttonClick = target.closest('button');
+      if (!buttonClick) return;
+      map.insertBefore(renderCard(cards[i]), filtersBlock);
+    };
   });
 
   return pinElement;
