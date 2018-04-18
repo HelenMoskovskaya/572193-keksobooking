@@ -1,26 +1,27 @@
 'use strict';
 
-// удаляем класс для активации карты
+var QUANTITY_ADVERT = 8;
+var X_COORDINATE_MIN = 300;
+var X_COORDINATE_MAX = 900;
+var Y_COORDINATE_MIN = 150;
+var Y_COORDINATE_MAX = 500;
+var DIFF_PIN_X = 50 / 2; // 50 - ширина блока img с пином (пин находится посередине, поэтому делим на 2)
+var DIFF_PIN_Y = 70; // 70 - высота блока img с пином
+var MIN_PRICE = 1000;
+var MAX_PRICE = 1000000;
+var ROOMS_QUANTITY = 5;
+var GUESTS_QUANTITY = 10;
 
-var map = document.querySelector('.map');
-map.classList.remove('map--faded');
+var MAP_PIN_BUTTON_SIZE = 65;
+var MAP_PIN_MAIN_WIDTH = 65;
+var MAP_PIN_MAIN_HEIGHT = 87;
 
-// Находим элемент, в который будем вставлять фрагмент
-
-var pinBlock = map.querySelector('.map__pins');
-
-// Находим шаблон для пина
-
-var pinTemplate = document.querySelector('template').content.querySelector('.map__pin');
-
-// Находим шаблон для объявления
-
-var cardTemplate = document.querySelector('template').content.querySelector('.map__card');
-
+var ESC_KEYCODE = 27;
+var ENTER_KEYCODE = 13;
 
 // массивы данных
 
-var OFFER_TITLE = [
+var OFFER_TITLES = [
   'Большая уютная квартира',
   'Маленькая неуютная квартира',
   'Огромный прекрасный дворец',
@@ -30,7 +31,8 @@ var OFFER_TITLE = [
   'Уютное бунгало далеко от моря',
   'Неуютное бунгало по колено в воде'
 ];
-var TYPE_OFFER = ['palace', 'flat', 'house', 'bungalo'];
+
+var TYPES_OFFER = ['palace', 'flat', 'house', 'bungalo'];
 var CHECKIN_OFFER = ['12:00', '13:00', '14:00'];
 var CHECKOUT_OFFER = ['12:00', '13:00', '14:00'];
 var FEATURES_OFFER = [
@@ -47,18 +49,19 @@ var PHOTOS_OFFER = [
   'http://o0.github.io/assets/images/tokyo/hotel3.jpg'
 ];
 
-var QUANTITY_ADVERT = 8;
-var X_COORDINATE_MIN = 300;
-var X_COORDINATE_MAX = 900;
-var Y_COORDINATE_MIN = 150;
-var Y_COORDINATE_MAX = 500;
-var DIFF_PIN_X = 50 / 2; // 50 - ширина блока img с пином (пин находится посередине, поэтому делим на 2)
-var DIFF_PIN_Y = 70; // 70 - высота блока img с пином
-var AVATAR_QUANTITY = 8;
-var MIN_PRICE = 1000;
-var MAX_PRICE = 1000000;
-var ROOMS_QUANTITY = 5;
-var GUESTS_QUANTITY = 10;
+
+// Находим элемент, в который будем вставлять фрагмент
+
+var map = document.querySelector('.map');
+var pinBlock = map.querySelector('.map__pins');
+
+// Находим шаблоны для объявления
+
+var cardTemplate = document.querySelector('template');
+var mapCard = cardTemplate.content.querySelector('.map__card');
+
+var filtersBlock = map.querySelector('.map__filters-container');
+
 
 // Поиск случайного числа(number) в диапазоне
 
@@ -95,23 +98,22 @@ var getRandomArray = function () {
   return newArray;
 };
 
-
 // Создание основного массива с объектами
 
 var getAdvert = function () {
-  var xСoordinate = getRandomNumber(X_COORDINATE_MIN, X_COORDINATE_MAX);
-  var yСoordinate = getRandomNumber(Y_COORDINATE_MIN, Y_COORDINATE_MAX);
-  var advert = [];
+  var adverts = [];
   for (var i = 0; i < QUANTITY_ADVERT; i++) {
-    advert[i] = {
+    var xСoordinate = getRandomNumber(X_COORDINATE_MIN, X_COORDINATE_MAX);
+    var yСoordinate = getRandomNumber(Y_COORDINATE_MIN, Y_COORDINATE_MAX);
+    adverts[i] = {
       author: {
-        avatar: 'img/avatars/user0' + getRandomNumber(1, AVATAR_QUANTITY) + '.png'
+        avatar: 'img/avatars/user' + '0' + (i + 1) + '.png'
       },
       offer: {
-        title: OFFER_TITLE[getRandomValue(OFFER_TITLE)],
+        title: OFFER_TITLES[getRandomValue(OFFER_TITLES)],
         address: xСoordinate + ',' + yСoordinate,
         price: getRandomNumber(MIN_PRICE, MAX_PRICE),
-        type: TYPE_OFFER[getRandomValue(TYPE_OFFER)],
+        type: TYPES_OFFER[getRandomValue(TYPES_OFFER)],
         rooms: getRandomNumber(1, ROOMS_QUANTITY),
         guests: getRandomNumber(1, GUESTS_QUANTITY),
         checkin: CHECKIN_OFFER[getRandomValue(CHECKIN_OFFER)],
@@ -121,15 +123,15 @@ var getAdvert = function () {
         photos: getRandomSort(PHOTOS_OFFER)
       },
       location: {
-        x: getRandomNumber(X_COORDINATE_MIN, X_COORDINATE_MAX) - DIFF_PIN_X,
-        y: getRandomNumber(Y_COORDINATE_MIN, Y_COORDINATE_MAX) - DIFF_PIN_Y
+        x: xСoordinate - DIFF_PIN_X,
+        y: yСoordinate - DIFF_PIN_Y
       }
     };
   }
-  return advert;
+  return adverts;
 };
 
-var advertShow = getAdvert();
+var cards = getAdvert();
 
 // Функция создания features
 
@@ -146,10 +148,12 @@ var createFeaturesElement = function (array) {
 
 // Копируем шаблон и заполняем данными блок объявления
 
-var renderCard = function (advert) {
-  var cardElement = cardTemplate.cloneNode(true);
+var cardElement = mapCard.cloneNode(true);
 
+var renderCard = function (advert) {
   cardElement.querySelector('.popup__title').textContent = advert.offer.title;
+
+
   cardElement.querySelector('.popup__text--address').textContent = advert.offer.address;
   cardElement.querySelector('.popup__text--price').textContent = advert.offer.price + '₽/ночь';
 
@@ -204,40 +208,51 @@ advert.offer.rooms + ' ' + ' ' + cardRooms + ' ' + 'для' + ' ' + advert.offer
   cardElement.querySelector('.popup__features').appendChild(createFeaturesElement(advert.offer.features));
   cardElement.querySelector('.popup__description').textContent = advert.offer.description;
 
+  cardElement.querySelector('.popup__photos').innerHTML = '';
   var photoList = cardElement.querySelector('.popup__photos');
-  var photoItem = photoList.querySelector('.popup__photo');
-  var fragment = document.createDocumentFragment();
-  for (var i = 0; i < advert.offer.photos.length; i++) {
-    var photoElement = photoItem.cloneNode(true);
-    photoElement.src = advert.offer.photos[i];
-    fragment.appendChild(photoElement);
-  }
-  photoList.removeChild(photoItem);
-  photoList.appendChild(fragment);
+  var createPhotos = function () {
+    for (var j = 0; j < advert.offer.photos.length; j++) {
+      var photoElement = document.createElement('img');
+      photoElement.classList.add('.popup__photo');
+      photoElement.width = '45';
+      photoElement.height = '40';
+      photoElement.alt = 'Фотография жилья';
+      photoElement.src = advert.offer.photos[j];
+      photoList.appendChild(photoElement);
+    }
+    return photoElement;
+  };
+  photoList = createPhotos();
 
   cardElement.querySelector('.popup__avatar').src = advert.author.avatar;
+  cardElement.classList.remove('hidden');
+
+  var cardClose = cardElement.querySelector('.popup__close');
+
+  var closeCard = function () {
+    cardElement.classList.add('hidden');
+  };
+
+  cardClose.addEventListener('click', closeCard);
+  cardClose.addEventListener('keydown', function (evt) {
+    if (evt.keyCode === ENTER_KEYCODE) {
+      closeCard();
+    }
+    if (evt.keyCode === ESC_KEYCODE) {
+      closeCard();
+    }
+  });
 
   return cardElement;
 };
 
-// Отрисовали блок объявления
-
-var createCard = function (advert) {
-  var cardFragment = document.createDocumentFragment();
-  for (var i = 0; i < advert.length; i++) {
-    cardFragment.appendChild(renderCard(advert[i]));
-  }
-  pinBlock.appendChild(cardFragment);
-};
-
-// Вывели объявление в браузер
-
-createCard(advertShow);
 
 // Копируем шаблон и заполняем данными блок пина
 
-var renderPin = function (advert) {
-  var pinElement = pinTemplate.cloneNode(true); // Копируем шаблон
+var renderPin = function (advert, i) {
+  var mapPin = cardTemplate.content.querySelector('.map__pin');
+
+  var pinElement = mapPin.cloneNode(true); // Копируем шаблон
 
   var pinX = advert.location.x; // координаты метки по оси X
   var pinY = advert.location.y; // координаты метки по оси Y
@@ -245,6 +260,29 @@ var renderPin = function (advert) {
   pinElement.style = 'left: ' + pinX + 'px; top: ' + pinY + 'px;';
   pinElement.querySelector('img').src = advert.author.avatar;
   pinElement.querySelector('img').alt = advert.offer.title;
+  pinElement.setAttribute('data-index', i);
+
+  var openCard = function (evt) {
+    var target = evt.target;
+    var buttonClick = target.closest('button');
+    if (!buttonClick) {
+      return;
+    }
+    map.insertBefore(renderCard(cards[i]), filtersBlock);
+  };
+
+
+  pinElement.addEventListener('click', openCard);
+  pinElement.addEventListener('keydown', function (evt) {
+    if (evt.keyCode === ENTER_KEYCODE) {
+      var target = evt.target;
+      var buttonClick = target.closest('button');
+      if (!buttonClick) {
+        return;
+      }
+      map.insertBefore(renderCard(cards[i]), filtersBlock);
+    }
+  });
 
   return pinElement;
 };
@@ -252,15 +290,60 @@ var renderPin = function (advert) {
 
 // Отрисовали блок пина
 
-var createPin = function (advert) {
+var createPins = function () {
   var pinFragment = document.createDocumentFragment();
-  for (var i = 0; i < advert.length; i++) {
-    pinFragment.appendChild(renderPin(advert[i]));
+  for (var i = 0; i < cards.length; i++) {
+    pinFragment.appendChild(renderPin(cards[i], i));
   }
   pinBlock.appendChild(pinFragment);
 };
 
-// Вывели пин в браузер
 
-createPin(advertShow);
+// Активация страницы //
+
+var form = document.querySelector('.ad-form');
+var formFieldset = form.querySelectorAll('fieldset');
+var inputAddress = form.querySelector('input[name="address"]');
+var mapPinMain = map.querySelector('.map__pin--main');
+
+
+var getMainButtonCoordinate = function () {
+  var mapPinButtonCoordinate = Math.floor((parseInt(mapPinMain.style.left, 10) + MAP_PIN_BUTTON_SIZE / 2)) + ' , '
++ Math.floor((parseInt(mapPinMain.style.top, 10) + MAP_PIN_BUTTON_SIZE / 2));
+
+  inputAddress.value = mapPinButtonCoordinate;
+
+  return mapPinButtonCoordinate;
+};
+
+getMainButtonCoordinate();
+
+var getPinMainCoordinate = function () {
+  var mapPinMainCoordinate = Math.floor((parseInt(mapPinMain.style.left, 10) + MAP_PIN_MAIN_WIDTH / 2)) + ' , '
++ Math.floor((parseInt(mapPinMain.style.top, 10) + MAP_PIN_MAIN_HEIGHT));
+  return mapPinMainCoordinate;
+};
+
+var activatePage = function () {
+
+  map.classList.remove('map--faded');
+  form.classList.remove('ad-form--disabled');
+
+
+  for (var i = 0; i < formFieldset.length; i++) {
+    formFieldset[i].removeAttribute('disabled');
+  }
+
+  inputAddress.value = getPinMainCoordinate();
+  createPins(cards);
+
+};
+
+
+mapPinMain.addEventListener('mouseup', activatePage);
+mapPinMain.addEventListener('keydown', function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    activatePage();
+  }
+});
 
