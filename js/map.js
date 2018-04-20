@@ -22,6 +22,11 @@ var ENTER_KEYCODE = 13;
 var PHOTOS_WIDTH = 45;
 var PHOTOS_HEIGHT = 40;
 
+var PRICE_MIN_BUNGALO = 0;
+var PRICE_MIN_FLAT = 1000;
+var PRICE_MIN_HOUSE = 5000;
+var PRICE_MIN_PALACE = 10000;
+
 // массивы данных
 
 var OFFER_TITLES = [
@@ -35,7 +40,12 @@ var OFFER_TITLES = [
   'Неуютное бунгало по колено в воде'
 ];
 
-var TYPES_OFFER = ['palace', 'flat', 'house', 'bungalo'];
+var TYPES_OFFER = {
+  palace: 'Дворец',
+  flat: 'Квартира',
+  house: 'Дом',
+  bungalo: 'Бунгало'};
+
 var CHECKIN_OFFER = ['12:00', '13:00', '14:00'];
 var CHECKOUT_OFFER = ['12:00', '13:00', '14:00'];
 var FEATURES_OFFER = [
@@ -46,22 +56,19 @@ var FEATURES_OFFER = [
   'elevator',
   'conditioner'
 ];
+
 var PHOTOS_OFFER = [
   'http://o0.github.io/assets/images/tokyo/hotel1.jpg',
   'http://o0.github.io/assets/images/tokyo/hotel2.jpg',
   'http://o0.github.io/assets/images/tokyo/hotel3.jpg'
 ];
 
-// Находим элемент, в который будем вставлять фрагмент
-
 var map = document.querySelector('.map');
-var pinBlock = map.querySelector('.map__pins');
 
 // Находим шаблоны для объявления
 
 var cardTemplate = document.querySelector('template');
 var mapCard = cardTemplate.content.querySelector('.map__card');
-var filtersBlock = map.querySelector('.map__filters-container');
 
 // Поиск случайного числа(number) в диапазоне
 
@@ -106,6 +113,12 @@ var getRandomArray = function () {
   return newArray;
 };
 
+// Для типа жилья
+
+var getrandomType = function (items) {
+  return items[Math.floor(Math.random() * items.length)];
+};
+
 // Создание основного массива с объектами
 
 var getAdvert = function () {
@@ -121,7 +134,7 @@ var getAdvert = function () {
         title: OFFER_TITLES[getRandomValue(OFFER_TITLES)],
         address: xСoordinate + ',' + yСoordinate,
         price: getRandomNumber(MIN_PRICE, MAX_PRICE),
-        type: TYPES_OFFER[getRandomValue(TYPES_OFFER)],
+        type: getrandomType(Object.keys(TYPES_OFFER)),
         rooms: getRandomNumber(1, ROOMS_QUANTITY),
         guests: getRandomNumber(1, GUESTS_QUANTITY),
         checkin: CHECKIN_OFFER[getRandomValue(CHECKIN_OFFER)],
@@ -162,22 +175,8 @@ var renderCard = function (advert) {
   cardElement.querySelector('.popup__title').textContent = advert.offer.title;
   cardElement.querySelector('.popup__text--address').textContent = advert.offer.address;
   cardElement.querySelector('.popup__text--price').textContent = advert.offer.price + '₽/ночь';
-  var cardType;
-  switch (advert.offer.type) {
-    case 'flat':
-      cardType = 'Квартира';
-      break;
-    case 'house':
-      cardType = 'Дом';
-      break;
-    case 'bungalo':
-      cardType = 'Бунгало';
-      break;
-    default:
-      cardType = 'Дворец';
-      break;
-  }
-  cardElement.querySelector('.popup__type').textContent = cardType;
+
+  cardElement.querySelector('.popup__type').textContent = TYPES_OFFER[advert.offer.type];
   var cardRooms;
   switch (advert.offer.rooms) {
     case 1:
@@ -226,40 +225,42 @@ advert.offer.rooms + ' ' + ' ' + cardRooms + ' ' + 'для' + ' ' + advert.offer
   return cardElement;
 };
 
-// Функция для работы клавиши esc
+// esc
 
 var onPopupEscPress = function (evt) {
   if (evt.keyCode === ESC_KEYCODE) {
-    closeCard();
+    setCloseCard();
   }
 };
 
 // Закрытие карточки
 
-var cardClose = cardElement.querySelector('.popup__close');
-
-var closeCard = function () {
+var setCloseCard = function () {
   cardElement.classList.add('hidden');
-  document.removeEventListener('keydown', onPopupEscPress);
 };
 
 var onButtonCloseCardClick = function () {
-  closeCard();
+  setCloseCard();
 };
 
 var onButtonCloseCardKeydown = function (evt) {
   if (evt.keyCode === ENTER_KEYCODE) {
-    closeCard();
+    setCloseCard();
   }
 };
 
-cardClose.addEventListener('click', onButtonCloseCardClick);
-cardClose.addEventListener('keydown', onButtonCloseCardKeydown);
+var closeCard = function () {
+  var cardClose = cardElement.querySelector('.popup__close');
+  cardClose.addEventListener('click', onButtonCloseCardClick);
+  cardClose.addEventListener('keydown', onButtonCloseCardKeydown);
+  document.removeEventListener('keydown', onPopupEscPress);
+};
 
 // Копируем шаблон и заполняем данными блок пина
 
 var renderPin = function (advert, i) {
   var mapPin = cardTemplate.content.querySelector('.map__pin');
+  var filtersBlock = map.querySelector('.map__filters-container');
   var pinElement = mapPin.cloneNode(true); // Копируем шаблон
   var pinX = advert.location.x; // координаты метки по оси X
   var pinY = advert.location.y; // координаты метки по оси Y
@@ -292,6 +293,7 @@ var renderPin = function (advert, i) {
 // Отрисовали блок пина
 
 var createPins = function () {
+  var pinBlock = map.querySelector('.map__pins');
   var pinFragment = document.createDocumentFragment();
   for (var i = 0; i < cards.length; i++) {
     pinFragment.appendChild(renderPin(cards[i], i));
@@ -339,57 +341,43 @@ var onButtonMainPinKeyDown = function (evt) {
   }
 };
 
-mapPinMain.addEventListener('mouseup', onButtonMainPinClick);
-mapPinMain.addEventListener('keydown', onButtonMainPinKeyDown);
+var showPage = function () {
+  mapPinMain.addEventListener('mouseup', onButtonMainPinClick);
+  mapPinMain.addEventListener('keydown', onButtonMainPinKeyDown);
+};
 
 // Работа с формой
 
-var homeType = form.elements.type;
-var inputPrice = form.elements.price;
 var timeIn = form.elements.timein;
 var timeOut = form.elements.timeout;
 var room = form.elements.rooms;
 var capacity = form.elements.capacity;
-var resetButton = form.querySelector('.ad-form__reset');
+
 
 var changeType = function (evt) {
-  switch (evt.target.value) {
-    case 'bungalo':
-      inputPrice.min = 0;
-      inputPrice.placeholder = 0;
-      break;
-    case 'flat':
-      inputPrice.min = 1000;
-      inputPrice.placeholder = 1000;
-      break;
-    case 'house':
-      inputPrice.min = 5000;
-      inputPrice.placeholder = 5000;
-      break;
-    default:
-      inputPrice.min = 10000;
-      inputPrice.placeholder = 10000;
-      break;
-  }
+  var inputPrice = form.elements.price;
+  var price = {
+    bungalo: PRICE_MIN_BUNGALO,
+    flat: PRICE_MIN_FLAT,
+    house: PRICE_MIN_HOUSE,
+    palace: PRICE_MIN_PALACE
+  };
+  var newMinPrice = price[evt.target.value];
+  inputPrice.min = newMinPrice;
+  inputPrice.placeholder = newMinPrice;
 };
 
 var onTypeAndPriceChange = function (evt) {
   changeType(evt);
 };
 
-homeType.addEventListener('change', onTypeAndPriceChange);
-
 var onTimeInChange = function () {
   timeOut.value = timeIn.value;
 };
 
-timeIn.addEventListener('change', onTimeInChange);
-
 var onTimeOutChange = function () {
   timeIn.value = timeOut.value;
 };
-
-timeOut.addEventListener('change', onTimeOutChange);
 
 var changeRoomAndCapacity = function () {
   var validationRoomsAndCapacity = {
@@ -413,9 +401,6 @@ var onRoomAndCapacityChange = function () {
   changeRoomAndCapacity();
 };
 
-room.addEventListener('change', onRoomAndCapacityChange);
-capacity.addEventListener('change', onRoomAndCapacityChange);
-
 var deletePins = function () {
   var pins = document.querySelector('.map__pins');
   var buttons = pins.querySelectorAll('button');
@@ -438,6 +423,7 @@ var resetMapAndForm = function () {
   deletePins();
   cardElement.classList.add('hidden');
   form.reset();
+  getMainButtonCoordinate();
 };
 
 var onButtonResetClick = function () {
@@ -450,5 +436,20 @@ var onButtonResetKeydown = function (evt) {
   }
 };
 
-resetButton.addEventListener('click', onButtonResetClick);
-resetButton.addEventListener('keydown', onButtonResetKeydown);
+var changeFieldsetForm = function () {
+  var homeType = form.elements.type;
+  homeType.addEventListener('change', onTypeAndPriceChange);
+  timeIn.addEventListener('change', onTimeInChange);
+  timeOut.addEventListener('change', onTimeOutChange);
+  room.addEventListener('change', onRoomAndCapacityChange);
+  capacity.addEventListener('change', onRoomAndCapacityChange);
+  var resetButton = form.querySelector('.ad-form__reset');
+  resetButton.addEventListener('click', onButtonResetClick);
+  resetButton.addEventListener('keydown', onButtonResetKeydown);
+};
+
+// Вызов функций
+getMainButtonCoordinate();
+showPage();
+closeCard();
+changeFieldsetForm();
