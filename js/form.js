@@ -71,6 +71,16 @@
     capacity.addEventListener('change', onRoomAndCapacityChange);
   };
 
+  var resetForm = function () {
+    form.reset();
+    window.map.getMainButtonCoordinate();
+  };
+
+  form.addEventListener('submit', function (evt) {
+    window.backend.upload(new FormData(form), resetForm);
+    evt.preventDefault();
+  });
+
   // Вызов функций
 
   changeRoomAndCapacity();
