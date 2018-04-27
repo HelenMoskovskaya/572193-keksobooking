@@ -6,7 +6,6 @@
     var url = 'https:js.dump.academy/keksobooking/data';
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
-
     xhr.addEventListener('load', function () {
       if (xhr.status === 200) {
         onLoad(xhr.response);
@@ -25,7 +24,7 @@
     xhr.send();
   };
 
-  var upload = function (data, onLoad, onError) {
+  var upLoad = function (data, onLoad, onError) {
     var url = 'https://js.dump.academy/keksobooking';
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
@@ -51,6 +50,6 @@
 
   window.backend = {
     load: load,
-    upload: upload
+    upLoad: upLoad
   };
 })();

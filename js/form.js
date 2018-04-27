@@ -77,7 +77,7 @@
   };
 
   form.addEventListener('submit', function (evt) {
-    window.backend.upload(new FormData(form), resetForm);
+    window.backend.upLoad(new FormData(form), resetForm, window.pin.errorHandler);
     evt.preventDefault();
   });
 
