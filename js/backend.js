@@ -2,48 +2,44 @@
 
 (function () {
 
-  var load = function (onLoad, onError) {
-    var url = 'https:js.dump.academy/keksobooking/data';
+  var URL_GET = 'https://js.dump.academy/keksobooking/data';
+  var URL_POST = 'https://js.dump.academy/keksobooking';
+
+  var getData = function (onLoad, onError, method, data) {
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
-    xhr.addEventListener('load', function () {
+    var onXhrLoad = function () {
       if (xhr.status === 200) {
         onLoad(xhr.response);
       } else {
         onError('Статус ответа: ' + xhr.status + ' ' + xhr.statusText);
       }
-    });
-    xhr.addEventListener('error', function () {
+    };
+    var onXhrError = function () {
       onError('Произошла ошибка соединения');
-    });
-    xhr.addEventListener('timeout', function () {
+    };
+    var onXhrTimeout = function () {
       onError('Запрос не успел выполниться за ' + xhr.timeout + 'мс');
-    });
+    };
+    xhr.addEventListener('load', onXhrLoad);
+    xhr.addEventListener('error', onXhrError);
+    xhr.addEventListener('timeout', onXhrTimeout);
     xhr.timeout = 10000;
-    xhr.open('GET', url);
-    xhr.send();
+    if (method === 'GET') {
+      xhr.open('GET', URL_GET);
+      xhr.send();
+    } else {
+      xhr.open('POST', URL_POST);
+      xhr.send(data);
+    }
+  };
+
+  var load = function (onLoad, onError) {
+    getData(onLoad, onError, 'GET');
   };
 
   var upLoad = function (data, onLoad, onError) {
-    var url = 'https://js.dump.academy/keksobooking';
-    var xhr = new XMLHttpRequest();
-    xhr.responseType = 'json';
-    xhr.addEventListener('load', function () {
-      if (xhr.status === 200) {
-        onLoad(xhr.response);
-      } else {
-        onError('Статус ответа: ' + xhr.status + ' ' + xhr.statusText);
-      }
-    });
-    xhr.addEventListener('error', function () {
-      onError('Произошла ошибка соединения');
-    });
-    xhr.addEventListener('timeout', function () {
-      onError('Запрос не успел выполниться за ' + xhr.timeout + 'мс');
-    });
-    xhr.timeout = 10000;
-    xhr.open('POST', url);
-    xhr.send(data);
+    getData(onLoad, onError, 'POST', data);
   };
 
   /**//**//**//**/
@@ -52,4 +48,5 @@
     load: load,
     upLoad: upLoad
   };
+
 })();
