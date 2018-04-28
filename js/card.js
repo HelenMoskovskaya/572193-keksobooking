@@ -20,12 +20,12 @@
     cardElement.querySelector('.popup__title').textContent = advert.offer.title;
     cardElement.querySelector('.popup__text--address').textContent = advert.offer.address;
     cardElement.querySelector('.popup__text--price').textContent = advert.offer.price + '₽/ночь';
-    var types = {
+    var typesMap = {
       palace: 'Дворец',
       flat: 'Квартира',
       house: 'Дом',
       bungalo: 'Бунгало'};
-    cardElement.querySelector('.popup__type').textContent = types[advert.offer.type];
+    cardElement.querySelector('.popup__type').textContent = typesMap[advert.offer.type];
     var cardRooms;
     if (advert.offer.rooms % 5 === 0) {
       cardRooms = 'комнат';

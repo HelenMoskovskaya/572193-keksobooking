@@ -128,6 +128,8 @@
       }
       mapPinMain.style.left = newLeft + 'px';
       mapPinMain.style.top = newTop + 'px';
+
+      window.form.inputAddress.value = getPinMainCoordinate();
     };
     var onMouseUp = function (upEvt) {
       upEvt.preventDefault();
