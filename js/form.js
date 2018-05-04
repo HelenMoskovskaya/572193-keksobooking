@@ -74,10 +74,18 @@
     capacity.addEventListener('change', onRoomAndCapacityChange);
   };
 
-  var onSuccessUpLoadForm = function (message) {
-    form.reset();
-    window.map.getMainButtonCoordinate();
-    window.util.loadErrorPopup(message);
+  var onSuccessUpLoadForm = function () {
+    var successBlock = document.querySelector('.success');
+
+    successBlock.classList.remove('hidden');
+
+    var successButton = successBlock.querySelector('.success__button');
+
+    successButton.addEventListener('click', function () {
+      successBlock.classList.add('hidden');
+    });
+
+    window.map.resetMapAndForm();
   };
 
   form.addEventListener('submit', function (evt) {
@@ -96,7 +104,8 @@
   window.form = {
     form: form,
     inputAddress: inputAddress,
-    formFieldset: formFieldset
+    formFieldset: formFieldset,
+    changeType: changeType
   };
 
 })();

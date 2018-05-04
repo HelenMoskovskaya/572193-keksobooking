@@ -85,6 +85,7 @@
     window.form.form.reset();
     getMainButtonCoordinate();
     showPage();
+    window.form.changeType();
   };
 
   var onButtonResetClick = function () {
@@ -104,7 +105,7 @@
   };
 
   // Вызов функций
-
+  getMainButtonCoordinate();
   showPage();
   setReset();
 
@@ -114,7 +115,8 @@
     map: map,
     mapPinMain: mapPinMain,
     getMainButtonCoordinate: getMainButtonCoordinate,
-    getPinMainCoordinate: getPinMainCoordinate
+    getPinMainCoordinate: getPinMainCoordinate,
+    resetMapAndForm: resetMapAndForm
   };
 
 })();
