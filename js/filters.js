@@ -9,6 +9,7 @@
 
   var changeHousingType = function (pin) {
     var housingType = mapFilters.querySelector('#housing-type');
+
     switch (housingType.value) {
       case 'any':
         return pin;
@@ -19,6 +20,7 @@
 
   var changeHousingPrice = function (pin) {
     var housingPrice = mapFilters.querySelector('#housing-price');
+
     switch (housingPrice.value) {
       case 'low':
         return pin.offer.price <= MIN_HOUSING_FILTER_PRICE;
@@ -33,6 +35,7 @@
 
   var changeHousingRooms = function (pin) {
     var housingRooms = mapFilters.querySelector('#housing-rooms');
+
     switch (housingRooms.value) {
       case 'any':
         return pin;
@@ -43,6 +46,7 @@
 
   var changeHousingGuests = function (pin) {
     var housingGuests = mapFilters.querySelector('#housing-guests');
+
     switch (housingGuests.value) {
       case 'any':
         return pin;
@@ -53,6 +57,7 @@
 
   var changeHousingFeatures = function (pin) {
     var housingFeatures = mapFilters.querySelectorAll('.map__checkbox');
+
     for (var i = 0; i < housingFeatures.length; i++) {
       if (housingFeatures[i].checked && pin.offer.features.indexOf(housingFeatures[i].value) < 0) {
         return false;
@@ -62,10 +67,11 @@
   };
 
   var filteredPins = function () {
-    var newPins = window.pin.pins.slice();
+    var newPins = window.pins.slice();
     var filters = newPins.filter(changeHousingType).filter(changeHousingPrice).
         filter(changeHousingRooms).filter(changeHousingGuests).filter(changeHousingFeatures);
-    window.map.deletePins();
+
+    window.util.deletePins();
     window.card.setCloseCard();
     window.pin.createPins(filters, 5);
   };

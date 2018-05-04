@@ -1216,12 +1216,23 @@ fieldset {
 
 /*       */
 
-.errorMessage {
+.loadPopup {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-around;
+  align-items: center;
   margin: 0 auto;
   position: fixed;
   text-align: center;
   width: 1200px;
+  height: 50px;
   font-size: 25px;
   z-index: 100;
-  background-color: blue;
+  background-color: #d28d8d;
+}
+
+.loadPopupButton {
+  width: 100px;
+  height: 30px;
+  font-size: 17px;
 }

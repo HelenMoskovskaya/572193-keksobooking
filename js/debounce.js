@@ -2,7 +2,7 @@
 
 (function () {
 
-  var DEBOUNCE_INTERVAL = 200; // ms
+  var DEBOUNCE_INTERVAL = 500;
 
   var lastTimeout;
 
@@ -10,6 +10,7 @@
     if (lastTimeout) {
       clearTimeout(lastTimeout);
     }
+
     lastTimeout = setTimeout(fun, DEBOUNCE_INTERVAL);
   };
 
