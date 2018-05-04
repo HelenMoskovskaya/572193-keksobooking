@@ -25,6 +25,7 @@
     return mapPinMainCoordinate;
   };
 
+
   var activatePage = function () {
     map.classList.remove('map--faded');
     window.form.form.classList.remove('ad-form--disabled');
@@ -32,8 +33,10 @@
       window.form.formFieldset[i].removeAttribute('disabled');
     }
     window.form.inputAddress.value = getPinMainCoordinate();
-    window.backend.load(window.pin.createPins, window.pin.errorHandler);
+    window.pin.createPins(window.pin.pins, 5);
     mapPinMain.addEventListener('mousedown', mapPinMainHandler);
+    mapPinMain.removeEventListener('mouseup', onButtonMainPinClick);
+    mapPinMain.removeEventListener('keydown', onButtonMainPinKeyDown);
   };
 
   var onButtonMainPinClick = function () {
@@ -72,7 +75,7 @@
     mapPinMain.style.left = MAP_PIN_BUTTON_START_LEFT;
     mapPinMain.style.top = MAP_PIN_BUTTON_START_TOP;
     deletePins();
-    window.card.cardElement.classList.add('hidden');
+    window.card.setCloseCard();
     window.form.form.reset();
     getMainButtonCoordinate();
   };
@@ -129,14 +132,20 @@
       mapPinMain.style.left = newLeft + 'px';
       mapPinMain.style.top = newTop + 'px';
 
-      window.form.inputAddress.value = getPinMainCoordinate();
     };
+    var onWheelMove = function (wheelEvt) {
+      wheelEvt.preventDefault();
+    };
+
     var onMouseUp = function (upEvt) {
       upEvt.preventDefault();
       onMouseMove(upEvt);
+      document.removeEventListener('mousemove', onWheelMove);
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);
+
     };
+    document.addEventListener('mousemove', onWheelMove);
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
   };
@@ -153,6 +162,7 @@
     map: map,
     pinMain: mapPinMain,
     getMainButtonCoordinate: getMainButtonCoordinate,
+    deletePins: deletePins
   };
 
 })();
