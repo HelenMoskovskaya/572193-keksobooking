@@ -10,26 +10,28 @@
   var form = document.querySelector('.ad-form');
   var formFieldset = form.querySelectorAll('fieldset');
   var inputAddress = form.querySelector('input[name="address"]');
+  var homeType = form.elements.type;
   var timeIn = form.elements.timein;
   var timeOut = form.elements.timeout;
   var room = form.elements.rooms;
   var capacity = form.elements.capacity;
 
-  var changeType = function (evt) {
+  var changeType = function () {
     var inputPrice = form.elements.price;
+
     var priceMap = {
       bungalo: PRICE_MIN_BUNGALO,
       flat: PRICE_MIN_FLAT,
       house: PRICE_MIN_HOUSE,
       palace: PRICE_MIN_PALACE
     };
-    var newMinPrice = priceMap[evt.target.value];
-    inputPrice.min = newMinPrice;
-    inputPrice.placeholder = newMinPrice;
+
+    inputPrice.min = priceMap[homeType.value];
+    inputPrice.placeholder = inputPrice.min;
   };
 
-  var onTypeAndPriceChange = function (evt) {
-    changeType(evt);
+  var onTypeAndPriceChange = function () {
+    changeType();
   };
 
   var onTimeInChange = function () {
@@ -47,9 +49,11 @@
       3: ['3', '2', '1'],
       100: ['0']
     };
+
     var selectRoom = room.options[room.selectedIndex].value;
     var selectCapacity = capacity.options[capacity.selectedIndex].value;
     var isCapasityFalse = validationRoomsAndCapacity[selectRoom].indexOf(selectCapacity) === -1;
+
     if (isCapasityFalse) {
       capacity.setCustomValidity('Количество гостей не должно превышать количество комнат,' +
       'при выборе 100 комнат - возможно выбрать только вариант "не для гостей"');
@@ -63,7 +67,6 @@
   };
 
   var changeFieldsetForm = function () {
-    var homeType = form.elements.type;
     homeType.addEventListener('change', onTypeAndPriceChange);
     timeIn.addEventListener('change', onTimeInChange);
     timeOut.addEventListener('change', onTimeOutChange);
@@ -72,12 +75,21 @@
   };
 
   var onSuccessUpLoadForm = function () {
-    form.reset();
-    window.map.getMainButtonCoordinate();
+    var successBlock = document.querySelector('.success');
+
+    successBlock.classList.remove('hidden');
+
+    var successButton = successBlock.querySelector('.success__button');
+
+    successButton.addEventListener('click', function () {
+      successBlock.classList.add('hidden');
+    });
+
+    window.map.resetMapAndForm();
   };
 
   form.addEventListener('submit', function (evt) {
-    window.backend.upLoad(new FormData(form), onSuccessUpLoadForm, window.pin.onErrorLoad);
+    window.backend.requestData(window.util.variablesConst.URL_POST, 'POST', new FormData(form), onSuccessUpLoadForm, window.util.loadErrorPopup);
     evt.preventDefault();
   });
 
@@ -85,13 +97,15 @@
 
   changeRoomAndCapacity();
   changeFieldsetForm();
+  changeType();
 
   /**//**//**//**/
 
   window.form = {
     form: form,
     inputAddress: inputAddress,
-    formFieldset: formFieldset
+    formFieldset: formFieldset,
+    changeType: changeType
   };
 
 })();

@@ -2,8 +2,6 @@
 
 (function () {
 
-  var ESC_KEYCODE = 27;
-  var ENTER_KEYCODE = 13;
   var PHOTOS_WIDTH = 45;
   var PHOTOS_HEIGHT = 40;
 
@@ -16,26 +14,30 @@
 
   var cardElement = mapCard.cloneNode(true);
 
-  var renderCard = function (advert) {
-    cardElement.querySelector('.popup__title').textContent = advert.offer.title;
-    cardElement.querySelector('.popup__text--address').textContent = advert.offer.address;
-    cardElement.querySelector('.popup__text--price').textContent = advert.offer.price + '₽/ночь';
+  var renderCard = function (data) {
+    cardElement.querySelector('.popup__title').textContent = data.offer.title;
+    cardElement.querySelector('.popup__text--address').textContent = data.offer.address;
+    cardElement.querySelector('.popup__text--price').textContent = data.offer.price + '₽/ночь';
+
     var typesMap = {
       palace: 'Дворец',
       flat: 'Квартира',
       house: 'Дом',
       bungalo: 'Бунгало'};
-    cardElement.querySelector('.popup__type').textContent = typesMap[advert.offer.type];
+
+    cardElement.querySelector('.popup__type').textContent = typesMap[data.offer.type];
+
     var cardRooms;
-    if (advert.offer.rooms % 5 === 0) {
+    if (data.offer.rooms % 5 === 0) {
       cardRooms = 'комнат';
-    } else if (advert.offer.rooms === 1) {
+    } else if (data.offer.rooms === 1) {
       cardRooms = 'комната';
     } else {
       cardRooms = 'комнаты';
     }
+
     var cardGuests;
-    switch (advert.offer.guests) {
+    switch (data.offer.guests) {
       case 1:
         cardGuests = 'гостя';
         break;
@@ -43,11 +45,13 @@
         cardGuests = 'гостей';
         break;
     }
+
     cardElement.querySelector('.popup__text--capacity').textContent =
-  advert.offer.rooms + ' ' + ' ' + cardRooms + ' ' + 'для' + ' ' + advert.offer.guests + ' ' + cardGuests;
+  data.offer.rooms + ' ' + ' ' + cardRooms + ' ' + 'для' + ' ' + data.offer.guests + ' ' + cardGuests;
     cardElement.querySelector('.popup__text--time').textContent =
-  'Заезд после' + ' ' + advert.offer.checkin + ',' + ' ' + 'выезд до' + ' ' + advert.offer.checkout;
+  'Заезд после' + ' ' + data.offer.checkin + ',' + ' ' + 'выезд до' + ' ' + data.offer.checkout;
     cardElement.querySelector('.popup__features').innerHTML = '';
+
     var createFeaturesElement = function (array) {
       var featuresFragment = document.createDocumentFragment();
       for (var j = 0; j < array.length; j++) {
@@ -58,34 +62,38 @@
       }
       return featuresFragment;
     };
-    cardElement.querySelector('.popup__features').appendChild(createFeaturesElement(advert.offer.features));
-    cardElement.querySelector('.popup__description').textContent = advert.offer.description;
+
+    cardElement.querySelector('.popup__features').appendChild(createFeaturesElement(data.offer.features));
+    cardElement.querySelector('.popup__description').textContent = data.offer.description;
     cardElement.querySelector('.popup__photos').innerHTML = '';
+
     var photoList = cardElement.querySelector('.popup__photos');
+
     var createPhotos = function () {
-      for (var j = 0; j < advert.offer.photos.length; j++) {
+      for (var j = 0; j < data.offer.photos.length; j++) {
         var photoElement = document.createElement('img');
         photoElement.classList.add('.popup__photo');
         photoElement.width = PHOTOS_WIDTH;
         photoElement.height = PHOTOS_HEIGHT;
         photoElement.alt = 'Фотография жилья';
-        photoElement.src = advert.offer.photos[j];
+        photoElement.src = data.offer.photos[j];
         photoElement.style.marginRight = '5' + 'px';
         photoElement.style.marginBottom = '5' + 'px';
         photoList.appendChild(photoElement);
       }
       return photoElement;
     };
+
     photoList = createPhotos();
-    cardElement.querySelector('.popup__avatar').src = advert.author.avatar;
+    cardElement.querySelector('.popup__avatar').src = data.author.avatar;
     cardElement.classList.remove('hidden');
     return cardElement;
   };
 
-  // esc
+  // Закрытие карточки esc
 
   var onPopupEscPress = function (evt) {
-    if (evt.keyCode === ESC_KEYCODE) {
+    if (evt.keyCode === window.util.variablesConst.ESC_KEYCODE) {
       setCloseCard();
     }
   };
@@ -101,13 +109,14 @@
   };
 
   var onButtonCloseCardKeydown = function (evt) {
-    if (evt.keyCode === ENTER_KEYCODE) {
+    if (evt.keyCode === window.util.variablesConst.ENTER_KEYCODE) {
       setCloseCard();
     }
   };
 
   var closeCard = function () {
     var cardClose = cardElement.querySelector('.popup__close');
+
     cardClose.addEventListener('click', onButtonCloseCardClick);
     cardClose.addEventListener('keydown', onButtonCloseCardKeydown);
     document.removeEventListener('keydown', onPopupEscPress);
@@ -123,8 +132,7 @@
     template: cardTemplate,
     renderCard: renderCard,
     onPopupEscPress: onPopupEscPress,
-    enterKeycode: ENTER_KEYCODE,
-    cardElement: cardElement
+    setCloseCard: setCloseCard,
   };
 
 })();
