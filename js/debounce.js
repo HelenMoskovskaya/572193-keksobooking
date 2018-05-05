@@ -2,21 +2,18 @@
 
 (function () {
 
-  var DEBOUNCE_INTERVAL = 500;
-
   var lastTimeout;
 
-  var debounce = function (fun) {
+  var debounce = function (fun, interval) {
     if (lastTimeout) {
       clearTimeout(lastTimeout);
     }
 
-    lastTimeout = setTimeout(fun, DEBOUNCE_INTERVAL);
+    lastTimeout = setTimeout(fun, interval);
   };
 
   window.debounce = {
-    debounce: debounce,
-    debounceInterval: DEBOUNCE_INTERVAL
+    debounce: debounce
   };
 
 })();

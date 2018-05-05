@@ -6,19 +6,12 @@
 
     ESC_KEYCODE: 27,
     ENTER_KEYCODE: 13,
-    MAP_PIN_MAIN_WIDTH: 65,
-    MAP_PIN_MAIN_HEIGHT: 87,
+    PIN_TIP_HEIGHT: 22,
+    MAX_LIMIT_TOP: 500,
+    MIN_LIMIT_TOP: 150,
     URL_GET: 'https://js.dump.academy/keksobooking/data',
-    URL_POST: 'https://js.dump.academy/keksobooking'
-  };
-
-  var deletePins = function () {
-    var pins = document.querySelector('.map__pins');
-    var buttons = pins.querySelectorAll('button');
-
-    for (var j = 1; j < buttons.length; j++) {
-      pins.removeChild(buttons[j]);
-    }
+    URL_POST: 'https://js.dump.academy/keksobooking',
+    DEBOUNCE_INTERVAL: 500
   };
 
   var loadErrorPopup = function (errorMessage) {
@@ -43,12 +36,9 @@
     return popup;
   };
 
-  /**//**//**//**/
-
   window.util = {
     variablesConst: variablesConst,
     loadErrorPopup: loadErrorPopup,
-    deletePins: deletePins
   };
 
 })();
