@@ -93,13 +93,13 @@
     evt.preventDefault();
   });
 
-  // Вызов функций
+  var initForm = function () {
+    changeRoomAndCapacity();
+    changeFieldsetForm();
+    changeType();
+  };
 
-  changeRoomAndCapacity();
-  changeFieldsetForm();
-  changeType();
-
-  /**//**//**//**/
+  initForm();
 
   window.form = {
     form: form,

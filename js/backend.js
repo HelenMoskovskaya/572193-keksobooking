@@ -40,8 +40,6 @@
     xhr.send(data);
   };
 
-  /**//**//**//**/
-
   window.backend = {
     requestData: requestData
   };

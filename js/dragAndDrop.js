@@ -7,10 +7,12 @@
   var onMapPinMainMove = function (evt) {
     evt.preventDefault();
 
-    var maxLeft = 1200 - window.util.variablesConst.MAP_PIN_MAIN_WIDTH;
+    var maxLeft = window.pin.map.offsetWidth - window.map.mapPinMain.offsetWidth;
     var minLeft = 0;
-    var maxTop = 500 - window.util.variablesConst.MAP_PIN_MAIN_HEIGHT;
-    var minTop = 150 - window.util.variablesConst.MAP_PIN_MAIN_HEIGHT;
+    var maxTop = window.util.variablesConst.MAX_LIMIT_TOP -
+        window.map.mapPinMain.offsetWidth + window.util.variablesConst.PIN_TIP_HEIGHT;
+    var minTop = window.util.variablesConst.MIN_LIMIT_TOP -
+        window.map.mapPinMain.offsetWidth + window.util.variablesConst.PIN_TIP_HEIGHT;
 
     var startCoords = {
       x: evt.clientX,
@@ -67,11 +69,8 @@
     document.addEventListener('mouseup', onMouseUp);
   };
 
-    /**//**//**//**/
-
   window.dragAndDrop = {
     onMapPinMainMove: onMapPinMainMove,
   };
-
 
 })();
