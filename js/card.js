@@ -114,19 +114,13 @@
     }
   };
 
-  var closeCard = function () {
+  (function () {
     var cardClose = cardElement.querySelector('.popup__close');
 
     cardClose.addEventListener('click', onButtonCloseCardClick);
     cardClose.addEventListener('keydown', onButtonCloseCardKeydown);
     document.removeEventListener('keydown', onPopupEscPress);
-  };
-
-  // Вызов функций
-
-  closeCard();
-
-  /**//**//**//**/
+  })();
 
   window.card = {
     template: cardTemplate,
