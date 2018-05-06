@@ -79,7 +79,7 @@
   };
 
   var onFiltersChange = function () {
-    window.debounce.debounce(filteredPins, window.util.variablesConst.DEBOUNCE_INTERVAL);
+    window.debounce.debounce(filteredPins);
   };
 
   mapFilters.addEventListener('change', onFiltersChange);

@@ -11,7 +11,6 @@
     MIN_LIMIT_TOP: 150,
     URL_GET: 'https://js.dump.academy/keksobooking/data',
     URL_POST: 'https://js.dump.academy/keksobooking',
-    DEBOUNCE_INTERVAL: 500
   };
 
   var loadErrorPopup = function (errorMessage) {
