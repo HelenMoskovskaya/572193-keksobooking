@@ -7,12 +7,12 @@
 
   // Находим шаблоны для объявления
 
-  var cardTemplate = document.querySelector('template');
-  var mapCard = cardTemplate.content.querySelector('.map__card');
+  var cardTemplateElement = document.querySelector('template');
+  var mapCardElement = cardTemplateElement.content.querySelector('.map__card');
 
   // Копируем шаблон и заполняем данными блок объявления
 
-  var cardElement = mapCard.cloneNode(true);
+  var cardElement = mapCardElement.cloneNode(true);
 
   var renderPopup = function (data) {
     cardElement.querySelector('.popup__title').textContent = data.offer.title;
@@ -123,7 +123,7 @@
   })();
 
   window.card = {
-    template: cardTemplate,
+    template: cardTemplateElement,
     renderPopup: renderPopup,
     onPopupEscPress: onPopupEscPress,
     setClosePopup: setClosePopup,

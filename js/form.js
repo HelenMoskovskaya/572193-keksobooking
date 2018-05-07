@@ -7,17 +7,17 @@
   var PRICE_MIN_HOUSE = 5000;
   var PRICE_MIN_PALACE = 10000;
 
-  var form = document.querySelector('.ad-form');
-  var formFieldset = form.querySelectorAll('fieldset');
-  var inputAddress = form.querySelector('input[name="address"]');
-  var homeType = form.elements.type;
-  var timeIn = form.elements.timein;
-  var timeOut = form.elements.timeout;
-  var room = form.elements.rooms;
-  var capacity = form.elements.capacity;
+  var formElement = document.querySelector('.ad-form');
+  var fieldsetElement = formElement.querySelectorAll('fieldset');
+  var inputAddressElement = formElement.querySelector('input[name="address"]');
+  var homeTypeElement = formElement.elements.type;
+  var timeInElement = formElement.elements.timein;
+  var timeOutElement = formElement.elements.timeout;
+  var roomElement = formElement.elements.rooms;
+  var capacityElement = formElement.elements.capacity;
 
   var changeType = function () {
-    var inputPrice = form.elements.price;
+    var inputPriceElement = formElement.elements.price;
 
     var PriceMap = {
       bungalo: PRICE_MIN_BUNGALO,
@@ -26,8 +26,8 @@
       palace: PRICE_MIN_PALACE
     };
 
-    inputPrice.min = PriceMap[homeType.value];
-    inputPrice.placeholder = inputPrice.min;
+    inputPriceElement.min = PriceMap[homeTypeElement.value];
+    inputPriceElement.placeholder = inputPriceElement.min;
   };
 
   var onTypeAndPriceChange = function () {
@@ -35,30 +35,30 @@
   };
 
   var onTimeInChange = function () {
-    timeOut.value = timeIn.value;
+    timeOutElement.value = timeInElement.value;
   };
 
   var onTimeOutChange = function () {
-    timeIn.value = timeOut.value;
+    timeInElement.value = timeOutElement.value;
   };
 
   var changeRoomAndCapacity = function () {
-    var validationRoomsAndCapacity = {
+    var ValidationRoomsAndCapacity = {
       1: ['1'],
       2: ['2', '1'],
       3: ['3', '2', '1'],
       100: ['0']
     };
 
-    var selectRoom = room.options[room.selectedIndex].value;
-    var selectCapacity = capacity.options[capacity.selectedIndex].value;
-    var isCapasityFalse = validationRoomsAndCapacity[selectRoom].indexOf(selectCapacity) === -1;
+    var selectRoom = roomElement.options[roomElement.selectedIndex].value;
+    var selectCapacity = capacityElement.options[capacityElement.selectedIndex].value;
+    var isCapasityFalse = ValidationRoomsAndCapacity[selectRoom].indexOf(selectCapacity) === -1;
 
     if (isCapasityFalse) {
-      capacity.setCustomValidity('Количество гостей не должно превышать количество комнат,' +
+      capacityElement.setCustomValidity('Количество гостей не должно превышать количество комнат,' +
       'при выборе 100 комнат - возможно выбрать только вариант "не для гостей"');
     } else {
-      capacity.setCustomValidity('');
+      capacityElement.setCustomValidity('');
     }
   };
 
@@ -67,29 +67,29 @@
   };
 
   var changeFieldsetForm = function () {
-    homeType.addEventListener('change', onTypeAndPriceChange);
-    timeIn.addEventListener('change', onTimeInChange);
-    timeOut.addEventListener('change', onTimeOutChange);
-    room.addEventListener('change', onRoomAndCapacityChange);
-    capacity.addEventListener('change', onRoomAndCapacityChange);
+    homeTypeElement.addEventListener('change', onTypeAndPriceChange);
+    timeInElement.addEventListener('change', onTimeInChange);
+    timeOutElement.addEventListener('change', onTimeOutChange);
+    roomElement.addEventListener('change', onRoomAndCapacityChange);
+    capacityElement.addEventListener('change', onRoomAndCapacityChange);
   };
 
   var onSuccessUpLoadForm = function () {
-    var successBlock = document.querySelector('.success');
+    var successBlockElement = document.querySelector('.success');
 
-    successBlock.classList.remove('hidden');
+    successBlockElement.classList.remove('hidden');
 
-    var successButton = successBlock.querySelector('.success__button');
+    var successButtonElement = successBlockElement.querySelector('.success__button');
 
-    successButton.addEventListener('click', function () {
-      successBlock.classList.add('hidden');
+    successButtonElement.addEventListener('click', function () {
+      successBlockElement.classList.add('hidden');
     });
 
     window.map.resetMapAndForm();
   };
 
-  form.addEventListener('submit', function (evt) {
-    window.backend.requestData(window.util.variablesConst.URL_POST, 'POST', new FormData(form), onSuccessUpLoadForm, window.util.loadErrorPopup);
+  formElement.addEventListener('submit', function (evt) {
+    window.backend.requestData(window.util.variablesConst.URL_POST, 'POST', new FormData(formElement), onSuccessUpLoadForm, window.util.loadErrorPopup);
     evt.preventDefault();
   });
 
@@ -101,10 +101,10 @@
 
   initForm();
 
-  window.form = {
-    form: form,
-    inputAddress: inputAddress,
-    formFieldset: formFieldset,
+  window.formOut = {
+    form: formElement,
+    inputAddress: inputAddressElement,
+    fieldset: fieldsetElement,
     changeType: changeType
   };
 

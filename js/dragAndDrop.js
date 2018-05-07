@@ -7,12 +7,12 @@
   var onMapPinMainMove = function (evt) {
     evt.preventDefault();
 
-    var maxLeft = window.pin.map.offsetWidth - window.map.mapPinMain.offsetWidth;
+    var maxLeft = window.pin.map.offsetWidth - window.map.pinMain.offsetWidth;
     var minLeft = 0;
     var maxTop = window.util.variablesConst.MAX_LIMIT_TOP -
-        window.map.mapPinMain.offsetWidth + window.util.variablesConst.PIN_TIP_HEIGHT;
+        window.map.pinMain.offsetWidth + window.util.variablesConst.PIN_TIP_HEIGHT;
     var minTop = window.util.variablesConst.MIN_LIMIT_TOP -
-        window.map.mapPinMain.offsetWidth + window.util.variablesConst.PIN_TIP_HEIGHT;
+        window.map.pinMain.offsetWidth + window.util.variablesConst.PIN_TIP_HEIGHT;
 
     var startCoords = {
       x: evt.clientX,
@@ -32,8 +32,8 @@
         y: moveEvt.clientY
       };
 
-      var newTop = window.map.mapPinMain.offsetTop - shift.y;
-      var newLeft = window.map.mapPinMain.offsetLeft - shift.x;
+      var newTop = window.map.pinMain.offsetTop - shift.y;
+      var newLeft = window.map.pinMain.offsetLeft - shift.x;
 
       if (newLeft < minLeft) {
         newLeft = minLeft;
@@ -47,8 +47,8 @@
         newTop = maxTop;
       }
 
-      window.map.mapPinMain.style.left = newLeft + 'px';
-      window.map.mapPinMain.style.top = newTop + 'px';
+      window.map.pinMain.style.left = newLeft + 'px';
+      window.map.pinMain.style.top = newTop + 'px';
     };
 
     var onWheelMove = function (wheelEvt) {
@@ -57,7 +57,7 @@
 
     var onMouseUp = function (upEvt) {
       upEvt.preventDefault();
-      window.form.inputAddress.value = window.map.getPinMainCoordinate();
+      window.formOut.inputAddress.value = window.map.getPinMainCoordinate();
       onMouseMove(upEvt);
       document.removeEventListener('mousemove', onWheelMove);
       document.removeEventListener('mousemove', onMouseMove);
