@@ -79,12 +79,12 @@
     mapPinMain.style.left = MAP_PIN_BUTTON_START_LEFT + 'px';
     mapPinMain.style.top = MAP_PIN_BUTTON_START_TOP + 'px';
     document.querySelector('.pinsWrapper').innerHTML = '';
-    window.card.setCloseCard();
+    window.card.setClosePopup();
     window.form.form.reset();
     getMainButtonCoordinate();
     showPage();
     window.form.changeType();
-    window.filters.mapFilters.reset();
+    window.filter.mapFilters.reset();
   };
 
   var onButtonResetClick = function () {
@@ -92,7 +92,7 @@
   };
 
   var onButtonResetKeydown = function (evt) {
-    if (evt.keyCode === window.card.enterKeycode) {
+    if (evt.keyCode === window.util.variablesConst.ENTER_KEYCODE) {
       resetMapAndForm();
     }
   };
@@ -113,7 +113,6 @@
 
   window.map = {
     mapPinMain: mapPinMain,
-    getMainButtonCoordinate: getMainButtonCoordinate,
     getPinMainCoordinate: getPinMainCoordinate,
     resetMapAndForm: resetMapAndForm
   };

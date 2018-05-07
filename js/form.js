@@ -19,14 +19,14 @@
   var changeType = function () {
     var inputPrice = form.elements.price;
 
-    var priceMap = {
+    var PriceMap = {
       bungalo: PRICE_MIN_BUNGALO,
       flat: PRICE_MIN_FLAT,
       house: PRICE_MIN_HOUSE,
       palace: PRICE_MIN_PALACE
     };
 
-    inputPrice.min = priceMap[homeType.value];
+    inputPrice.min = PriceMap[homeType.value];
     inputPrice.placeholder = inputPrice.min;
   };
 

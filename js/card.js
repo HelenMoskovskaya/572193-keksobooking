@@ -14,18 +14,18 @@
 
   var cardElement = mapCard.cloneNode(true);
 
-  var renderCard = function (data) {
+  var renderPopup = function (data) {
     cardElement.querySelector('.popup__title').textContent = data.offer.title;
     cardElement.querySelector('.popup__text--address').textContent = data.offer.address;
     cardElement.querySelector('.popup__text--price').textContent = data.offer.price + '₽/ночь';
 
-    var typesMap = {
+    var TypesMap = {
       palace: 'Дворец',
       flat: 'Квартира',
       house: 'Дом',
       bungalo: 'Бунгало'};
 
-    cardElement.querySelector('.popup__type').textContent = typesMap[data.offer.type];
+    cardElement.querySelector('.popup__type').textContent = TypesMap[data.offer.type];
 
     var cardRooms;
     if (data.offer.rooms % 5 === 0) {
@@ -94,23 +94,23 @@
 
   var onPopupEscPress = function (evt) {
     if (evt.keyCode === window.util.variablesConst.ESC_KEYCODE) {
-      setCloseCard();
+      setClosePopup();
     }
   };
 
   // Закрытие карточки
 
-  var setCloseCard = function () {
+  var setClosePopup = function () {
     cardElement.classList.add('hidden');
   };
 
   var onButtonCloseCardClick = function () {
-    setCloseCard();
+    setClosePopup();
   };
 
   var onButtonCloseCardKeydown = function (evt) {
     if (evt.keyCode === window.util.variablesConst.ENTER_KEYCODE) {
-      setCloseCard();
+      setClosePopup();
     }
   };
 
@@ -124,9 +124,9 @@
 
   window.card = {
     template: cardTemplate,
-    renderCard: renderCard,
+    renderPopup: renderPopup,
     onPopupEscPress: onPopupEscPress,
-    setCloseCard: setCloseCard,
+    setClosePopup: setClosePopup,
   };
 
 })();

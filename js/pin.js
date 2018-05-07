@@ -25,7 +25,7 @@
         return;
       }
 
-      map.insertBefore(window.card.renderCard(data), filtersBlock);
+      map.insertBefore(window.card.renderPopup(data), filtersBlock);
       document.addEventListener('keydown', window.card.onPopupEscPress);
     };
 
@@ -55,9 +55,9 @@
   // Отрисовываем пины в браузере
 
   var createPins = function (data, k) {
-    var getLength = data.length >= k ? k : data.length;
+    var lengthPins = data.length >= k ? k : data.length;
     var pinFragment = document.createDocumentFragment();
-    for (var i = 0; i < getLength; i++) {
+    for (var i = 0; i < lengthPins; i++) {
       pinFragment.appendChild(renderPin(data[i]));
     }
     window.pinsWrapper.appendChild(pinFragment);

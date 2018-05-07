@@ -2,7 +2,7 @@
 
 (function () {
 
-  var variablesConst = {
+  var VariablesConst = {
 
     ESC_KEYCODE: 27,
     ENTER_KEYCODE: 13,
@@ -11,16 +11,17 @@
     MIN_LIMIT_TOP: 150,
     URL_GET: 'https://js.dump.academy/keksobooking/data',
     URL_POST: 'https://js.dump.academy/keksobooking',
+    DEBOUNCE_INTERVAL: 500
   };
 
   var loadErrorPopup = function (errorMessage) {
     var popup = document.createElement('div');
     popup.classList.add('loadPopup');
 
-    var errorMessege = document.createElement('p');
-    errorMessege.classList.add('loadMessege');
-    errorMessege.textContent = errorMessage;
-    popup.appendChild(errorMessege);
+    var errorMessage = document.createElement('p');
+    errorMessage.classList.add('loadMessage');
+    errorMessage.textContent = errorMessage;
+    popup.appendChild(errorMessage);
 
     var loadPopupButton = document.createElement('button');
     loadPopupButton.classList.add('loadPopupButton');
@@ -35,9 +36,24 @@
     return popup;
   };
 
+  var debounce = function (fun, interval) {
+    var lastTimeout;
+
+    if (lastTimeout) {
+      clearTimeout(lastTimeout);
+    }
+
+    lastTimeout = setTimeout(fun, interval || VariablesConst.DEBOUNCE_INTERVAL);
+  };
+
+  window.debounce = {
+    debounce: debounce
+  };
+
   window.util = {
-    variablesConst: variablesConst,
+    variablesConst: VariablesConst,
     loadErrorPopup: loadErrorPopup,
+    debounce: debounce
   };
 
 })();

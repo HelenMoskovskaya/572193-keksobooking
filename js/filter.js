@@ -3,7 +3,7 @@
 (function () {
 
   var MIN_HOUSING_FILTER_PRICE = 10000;
-  var MAX_HOUSING__FILTER_PRICE = 50000;
+  var MAX_HOUSING_FILTER_PRICE = 50000;
 
   var mapFilters = document.querySelector('.map__filters');
 
@@ -25,9 +25,9 @@
       case 'low':
         return pin.offer.price <= MIN_HOUSING_FILTER_PRICE;
       case 'middle':
-        return pin.offer.price >= MIN_HOUSING_FILTER_PRICE && pin.offer.price <= MAX_HOUSING__FILTER_PRICE;
+        return pin.offer.price >= MIN_HOUSING_FILTER_PRICE && pin.offer.price <= MAX_HOUSING_FILTER_PRICE;
       case 'high':
-        return pin.offer.price >= MAX_HOUSING__FILTER_PRICE;
+        return pin.offer.price >= MAX_HOUSING_FILTER_PRICE;
       default:
         return pin;
     }
@@ -66,7 +66,7 @@
     return true;
   };
 
-  var filteredPins = function () {
+  var getFiltersPins = function () {
     var newPins = window.pins.slice();
 
     document.querySelector('.pinsWrapper').innerHTML = '';
@@ -75,16 +75,16 @@
         filter(changeHousingRooms).filter(changeHousingGuests).filter(changeHousingFeatures);
 
     window.pin.createPins(filters, 5);
-    window.card.setCloseCard();
+    window.card.setClosePopup();
   };
 
   var onFiltersChange = function () {
-    window.debounce.debounce(filteredPins);
+    window.util.debounce(getFiltersPins);
   };
 
   mapFilters.addEventListener('change', onFiltersChange);
 
-  window.filters = {
+  window.filter = {
     mapFilters: mapFilters
   };
 
