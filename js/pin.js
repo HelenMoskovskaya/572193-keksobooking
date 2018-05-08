@@ -2,17 +2,17 @@
 
 (function () {
 
-  var map = document.querySelector('.map');
-  var filtersBlock = map.querySelector('.map__filters-container');
+  var mapElement = document.querySelector('.map');
+  var filtersBlockElement = mapElement.querySelector('.map__filters-container');
 
   // Копируем шаблон и заполняем данными блок пина
 
   var renderPin = function (data) {
-    var mapPin = window.card.template.content.querySelector('.map__pin');
-    var mapButton = map.querySelector('.map__pins button');
-    var pinElement = mapPin.cloneNode(true); // Копируем шаблон
-    var pinX = data.location.x - mapButton.offsetWidth / 2; // координаты метки по оси X
-    var pinY = data.location.y - mapButton.offsetHeight; // координаты метки по оси Y
+    var mapPinElement = window.card.template.content.querySelector('.map__pin');
+    var mapButtonElement = mapElement.querySelector('.map__pins button');
+    var pinElement = mapPinElement.cloneNode(true); // Копируем шаблон
+    var pinX = data.location.x - mapButtonElement.offsetWidth / 2; // координаты метки по оси X
+    var pinY = data.location.y - mapButtonElement.offsetHeight; // координаты метки по оси Y
 
     pinElement.style = 'left: ' + pinX + 'px; top: ' + pinY + 'px;';
     pinElement.querySelector('img').src = data.author.avatar;
@@ -25,7 +25,7 @@
         return;
       }
 
-      map.insertBefore(window.card.renderCard(data), filtersBlock);
+      mapElement.insertBefore(window.card.renderPopup(data), filtersBlockElement);
       document.addEventListener('keydown', window.card.onPopupEscPress);
     };
 
@@ -47,24 +47,24 @@
   // Создаем блок для пинов
 
   (function () {
-    window.pinsWrapper = document.createElement('div');
-    window.pinsWrapper.classList.add('pinsWrapper');
-    map.insertBefore(window.pinsWrapper, filtersBlock);
+    window.pinsWrapperElement = document.createElement('div');
+    window.pinsWrapperElement.classList.add('pinsWrapper');
+    mapElement.insertBefore(window.pinsWrapperElement, filtersBlockElement);
   })();
 
   // Отрисовываем пины в браузере
 
   var createPins = function (data, k) {
-    var getLength = data.length >= k ? k : data.length;
+    var lengthPins = data.length >= k ? k : data.length;
     var pinFragment = document.createDocumentFragment();
-    for (var i = 0; i < getLength; i++) {
+    for (var i = 0; i < lengthPins; i++) {
       pinFragment.appendChild(renderPin(data[i]));
     }
-    window.pinsWrapper.appendChild(pinFragment);
+    window.pinsWrapperElement.appendChild(pinFragment);
   };
 
   window.pin = {
-    map: map,
+    map: mapElement,
     createPins: createPins,
   };
 
